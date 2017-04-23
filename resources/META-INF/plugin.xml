@@ -1,0 +1,44 @@
+<idea-plugin version="2">
+  <id>com.github.lwfwind.automation.plugin.aping</id>
+  <name>aping</name>
+  <version>1.0</version>
+  <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/smart-api-framework">lwfwind</vendor>
+
+  <description><![CDATA[
+      execute run/debug test from xml more convenient for automation project based on smart-api-framework <br>
+      <em>most HTML tags may be used</em>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      1.0 add run/debug to EditorPopupMenu<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="RunTestCase" class="com.automation.aping.RunTestCase" icon="AllIcons.Toolwindows.ToolWindowRun"
+            description="run test case from xml">
+      <add-to-group group-id="EditorPopupMenu"/>
+    </action>
+
+    <action id="DebugTestCase" class="com.automation.aping.DebugTestCase" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+            description="debug test case from xml">
+      <add-to-group group-id="EditorPopupMenu"/>
+    </action>
+  </actions>
+
+</idea-plugin>
