@@ -19,7 +19,7 @@ import com.intellij.openapi.ui.Messages;
 /**
  * The type Run testcase.
  */
-public class DebugTestCase extends AnAction {
+public class EditorDebugTestCase extends AnAction {
 
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
@@ -52,7 +52,7 @@ public class DebugTestCase extends AnAction {
     }
 
     public void debugInIDEA(Project project, AnActionEvent e) {
-        ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e);
+        ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e, "editor");
         try {
             Executor debugExecutorInstance = DefaultDebugExecutor.getDebugExecutorInstance();
             final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultDebugExecutor.EXECUTOR_ID,
@@ -61,8 +61,6 @@ public class DebugTestCase extends AnAction {
                     debugExecutorInstance).runner(runner).runProfile(applicationConfiguration);
             ExecutionEnvironment build = executionEnvironmentBuilder.build();
             runner.execute(build);
-            // RunManagerEx.getInstanceEx(project).addConfiguration((RunnerAndConfigurationSettings)
-            // build.getConfigurationSettings(), true);
         } catch (ExecutionException ex) {
             Messages.showMessageDialog(project, "error", "error", Messages.getErrorIcon());
         }

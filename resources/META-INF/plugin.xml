@@ -30,17 +30,28 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="RunTestCase" class="com.automation.aping.RunTestCase" icon="AllIcons.Toolwindows.ToolWindowRun"
+    <action id="EditorRunTestCase" class="com.automation.aping.EditorRunTestCase" icon="AllIcons.Toolwindows.ToolWindowRun"
             description="run test case from xml">
       <add-to-group group-id="EditorPopupMenu"/>
       <add-to-group group-id="EditorTabPopupMenu"/>
     </action>
 
-    <action id="DebugTestCase" class="com.automation.aping.DebugTestCase" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+    <action id="EditorDebugTestCase" class="com.automation.aping.EditorDebugTestCase" icon="AllIcons.Toolwindows.ToolWindowDebugger"
             description="debug test case from xml">
       <add-to-group group-id="EditorPopupMenu"/>
       <add-to-group group-id="EditorTabPopupMenu"/>
     </action>
+
+    <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+            text="Run test suite" description="run test suite from project view">
+      <add-to-group group-id="ProjectViewPopupMenu"/>
+    </action>
+
+    <action id="ProjectViewDebugTestSuite" class="com.automation.aping.ProjectViewDebugTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+            text="Debug test suite" description="debug test suite from project view">
+      <add-to-group group-id="ProjectViewPopupMenu"/>
+    </action>
+
   </actions>
 
 </idea-plugin>

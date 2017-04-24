@@ -11,22 +11,21 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
 /**
  * The type Run testcase.
  */
-public class RunTestCase extends AnAction {
+public class ProjectViewRunTestSuite extends AnAction {
 
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
-            return;
-        }
         runInIDEA(project, e);
     }
 
@@ -35,24 +34,21 @@ public class RunTestCase extends AnAction {
     public void update(final AnActionEvent e) {
         //Get required data keys
         final Project project = e.getData(CommonDataKeys.PROJECT);
-        final Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
+        PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
+        if (psiXmlFile == null)
+            return;
+        VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
+        if (!virtualXmlFile.getName().endsWith(".xml")) {
             return;
         }
-        Document document = editor.getDocument();
-        //Set visibility only in case of existing project and editor
-        e.getPresentation().setVisible((project != null && document.getText().contains("DataConfig") && document.getText().contains("TestData")));
-        String testCaseName = Util.getTestCaseName(editor);
-        if (testCaseName.equals("")) {
-            String testSuiteName = document.toString().substring(document.toString().lastIndexOf("/") + 1, document.toString().lastIndexOf("."));
-            e.getPresentation().setText("Run " + testSuiteName);
-        } else {
-            e.getPresentation().setText("Run " + testCaseName);
-        }
+        String content = (String) FileDocumentManager.getInstance().getDocument(virtualXmlFile).getText();
+        e.getPresentation().setVisible((project != null && content.contains("DataConfig") && content.contains("TestData")));
+        String suiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
+        e.getPresentation().setText("Run " + suiteName);
     }
 
     public void runInIDEA(Project project, AnActionEvent e) {
-        ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e);
+        ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e, "project_view");
         try {
 
             Executor runExecutorInstance = DefaultRunExecutor.getRunExecutorInstance();
@@ -66,4 +62,5 @@ public class RunTestCase extends AnAction {
             Messages.showMessageDialog(project, "error", "error", Messages.getErrorIcon());
         }
     }
+
 }
