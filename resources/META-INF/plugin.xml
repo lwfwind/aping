@@ -32,15 +32,17 @@
     <action id="EditorRunTestCase" class="com.automation.aping.EditorRunTestCase"
             icon="AllIcons.Toolwindows.ToolWindowRun"
             description="run test case from xml">
-      <add-to-group group-id="EditorPopupMenu" relative-to-action="$Copy" anchor="after"/>
-      <add-to-group group-id="EditorTabPopupMenu" relative-to-action="$Copy" anchor="after"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="$Copy"/>
+      <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="$Copy"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="alt R"/>
     </action>
 
     <action id="EditorDebugTestCase" class="com.automation.aping.EditorDebugTestCase"
             icon="AllIcons.Toolwindows.ToolWindowDebugger"
             description="debug test case from xml">
-      <add-to-group group-id="EditorPopupMenu" relative-to-action="$Copy" anchor="after"/>
-      <add-to-group group-id="EditorTabPopupMenu" relative-to-action="$Copy" anchor="after"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="$Copy"/>
+      <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="$Copy"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="alt D"/>
     </action>
 
     <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
@@ -52,7 +54,6 @@
             text="Debug test suite" description="debug test suite from project view">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
-
   </actions>
 
 </idea-plugin>
