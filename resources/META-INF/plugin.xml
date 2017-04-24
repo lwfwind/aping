@@ -45,7 +45,7 @@
       <keyboard-shortcut keymap="$default" first-keystroke="alt D"/>
     </action>
 
-    <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+    <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowRun"
             text="Run test suite" description="run test suite from project view">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
