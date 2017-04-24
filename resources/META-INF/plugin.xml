@@ -1,17 +1,16 @@
 <idea-plugin version="2">
   <id>com.github.lwfwind.automation.plugin.aping</id>
   <name>aping</name>
-  <version>1.0</version>
-  <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/smart-api-framework">lwfwind</vendor>
+  <version>2.0</version>
+  <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/aping">lwfwind</vendor>
 
   <description><![CDATA[
-      execute run/debug test from xml more convenient for automation project based on smart-api-framework <br>
-      <em>most HTML tags may be used</em>
+      execute run/debug test from xml for automation project based on smart-api-framework <br>
     ]]></description>
 
   <change-notes><![CDATA[
-      1.0 add run/debug to EditorPopupMenu<br>
-      <em>most HTML tags may be used</em>
+      1.0 add run/debug test case action to EditorPopupMenu<br>
+      2.0 add run/debug test suite action to ProjectViewPopupMenu<br>
     ]]>
   </change-notes>
 
@@ -29,27 +28,29 @@
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
-    <action id="EditorRunTestCase" class="com.automation.aping.EditorRunTestCase" icon="AllIcons.Toolwindows.ToolWindowRun"
+
+    <action id="EditorRunTestCase" class="com.automation.aping.EditorRunTestCase"
+            icon="AllIcons.Toolwindows.ToolWindowRun"
             description="run test case from xml">
-      <add-to-group group-id="EditorPopupMenu"/>
-      <add-to-group group-id="EditorTabPopupMenu"/>
+      <add-to-group group-id="EditorPopupMenu" relative-to-action="$Copy" anchor="after"/>
+      <add-to-group group-id="EditorTabPopupMenu" relative-to-action="$Copy" anchor="after"/>
     </action>
 
-    <action id="EditorDebugTestCase" class="com.automation.aping.EditorDebugTestCase" icon="AllIcons.Toolwindows.ToolWindowDebugger"
+    <action id="EditorDebugTestCase" class="com.automation.aping.EditorDebugTestCase"
+            icon="AllIcons.Toolwindows.ToolWindowDebugger"
             description="debug test case from xml">
-      <add-to-group group-id="EditorPopupMenu"/>
-      <add-to-group group-id="EditorTabPopupMenu"/>
+      <add-to-group group-id="EditorPopupMenu" relative-to-action="$Copy" anchor="after"/>
+      <add-to-group group-id="EditorTabPopupMenu" relative-to-action="$Copy" anchor="after"/>
     </action>
 
     <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
             text="Run test suite" description="run test suite from project view">
-      <add-to-group group-id="ProjectViewPopupMenu"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
 
     <action id="ProjectViewDebugTestSuite" class="com.automation.aping.ProjectViewDebugTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
             text="Debug test suite" description="debug test suite from project view">
-      <add-to-group group-id="ProjectViewPopupMenu"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
 
   </actions>
