@@ -75,9 +75,9 @@ public class Util {
         int caretLineNumber = document.getLineNumber(offset);
         String lineText = document.getText().substring(document.getLineStartOffset(caretLineNumber), document.getLineEndOffset(caretLineNumber));
         String testCaseName = "";
-        if (lineText.contains("DataConfig ") || lineText.contains("<?xml version")) {
+        if (lineText.contains("TestSuite ") || lineText.contains("<?xml version")) {
             testCaseName = "null";
-        } else if (lineText.contains("TestData ")) {
+        } else if (lineText.contains("TestCase ")) {
             testCaseName = getBetweenString(lineText, "name=\"", "\"");
         } else {
             List<String> testCaseList = new ArrayList<String>();
@@ -87,7 +87,7 @@ public class Util {
                 if (lineNumber > caretLineNumber) {
                     break;
                 }
-                if (line.contains("TestData ")) {
+                if (line.contains("TestCase ")) {
                     testCaseName = getBetweenString(line, "name=\"", "\"");
                     testCaseList.add(testCaseName);
                 }

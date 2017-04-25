@@ -41,7 +41,7 @@ public class EditorDebugTestCase extends AnAction {
         }
         Document document = editor.getDocument();
         //Set visibility only in case of existing project and editor
-        e.getPresentation().setVisible((project != null && document.getText().contains("DataConfig") && document.getText().contains("TestData")));
+        e.getPresentation().setVisible((project != null && document.getText().contains("TestSuite") && document.getText().contains("TestCase")));
         String testCaseName = Util.getTestCaseName(editor);
         if (testCaseName.equals("")) {
             String testSuiteName = document.toString().substring(document.toString().lastIndexOf("/") + 1, document.toString().lastIndexOf("."));

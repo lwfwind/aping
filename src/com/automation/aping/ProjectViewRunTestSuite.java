@@ -42,7 +42,7 @@ public class ProjectViewRunTestSuite extends AnAction {
             return;
         }
         String content = (String) FileDocumentManager.getInstance().getDocument(virtualXmlFile).getText();
-        e.getPresentation().setVisible((project != null && content.contains("DataConfig") && content.contains("TestData")));
+        e.getPresentation().setVisible((project != null && content.contains("TestSuite") && content.contains("TestCase")));
         String suiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
         e.getPresentation().setText("Run " + suiteName);
     }
