@@ -38,6 +38,7 @@ public class ProjectViewDebugTestSuite extends AnAction {
         if (psiXmlFile == null)
             return;
         VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
+        e.getPresentation().setVisible(false);
         if (!virtualXmlFile.getName().endsWith(".xml")) {
             return;
         }
