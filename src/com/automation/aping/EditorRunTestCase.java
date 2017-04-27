@@ -4,17 +4,26 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.RunnerRegistry;
 import com.intellij.execution.application.ApplicationConfiguration;
+import com.intellij.execution.application.ApplicationConfigurationType;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
 import com.intellij.execution.runners.ProgramRunner;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.theoryinpractice.testng.configuration.TestNGConfiguration;
+import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
+
+import java.io.File;
 
 /**
  * The type Run testcase.
@@ -27,7 +36,7 @@ public class EditorRunTestCase extends AnAction {
         if (editor == null) {
             return;
         }
-        runInIDEA(project, e);
+        runTestNGTestInIDEA(project, e);
     }
 
     //Defining action’s visibility
@@ -53,6 +62,22 @@ public class EditorRunTestCase extends AnAction {
 
     public void runInIDEA(Project project, AnActionEvent e) {
         ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e, "editor");
+        try {
+
+            Executor runExecutorInstance = DefaultRunExecutor.getRunExecutorInstance();
+            final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultRunExecutor.EXECUTOR_ID,
+                    applicationConfiguration);
+            ExecutionEnvironmentBuilder executionEnvironmentBuilder = new ExecutionEnvironmentBuilder(project,
+                    runExecutorInstance).runner(runner).runProfile(applicationConfiguration);
+            ExecutionEnvironment build = executionEnvironmentBuilder.build();
+            runner.execute(build);
+        } catch (ExecutionException ex) {
+            Messages.showMessageDialog(project, "error", "error", Messages.getErrorIcon());
+        }
+    }
+
+    private void runTestNGTestInIDEA(Project project, AnActionEvent e) {
+        TestNGConfiguration applicationConfiguration = Util.getTestNGConfiguration(project, e, "editor");
         try {
 
             Executor runExecutorInstance = DefaultRunExecutor.getRunExecutorInstance();

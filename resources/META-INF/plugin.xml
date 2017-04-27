@@ -3,6 +3,7 @@
   <name>aping</name>
   <version>2.0</version>
   <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/aping">lwfwind</vendor>
+  <depends>TestNG-J</depends>
 
   <description><![CDATA[
       execute run/debug test from xml for automation project based on smart-api-framework <br>
@@ -46,12 +47,12 @@
     </action>
 
     <action id="ProjectViewRunTestSuite" class="com.automation.aping.ProjectViewRunTestSuite" icon="AllIcons.Toolwindows.ToolWindowRun"
-            text="Run test suite" description="run test suite from project view">
+            description="run test suite from project view">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
 
     <action id="ProjectViewDebugTestSuite" class="com.automation.aping.ProjectViewDebugTestSuite" icon="AllIcons.Toolwindows.ToolWindowDebugger"
-            text="Debug test suite" description="debug test suite from project view">
+            description="debug test suite from project view">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
   </actions>

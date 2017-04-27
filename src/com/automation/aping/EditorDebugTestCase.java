@@ -15,6 +15,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 
 /**
  * The type Run testcase.
@@ -27,7 +28,7 @@ public class EditorDebugTestCase extends AnAction {
         if (editor == null) {
             return;
         }
-        debugInIDEA(project, e);
+        debugTestNGInIDEA(project, e);
     }
 
     //Defining action’s visibility
@@ -53,6 +54,21 @@ public class EditorDebugTestCase extends AnAction {
 
     public void debugInIDEA(Project project, AnActionEvent e) {
         ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e, "editor");
+        try {
+            Executor debugExecutorInstance = DefaultDebugExecutor.getDebugExecutorInstance();
+            final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultDebugExecutor.EXECUTOR_ID,
+                    applicationConfiguration);
+            ExecutionEnvironmentBuilder executionEnvironmentBuilder = new ExecutionEnvironmentBuilder(project,
+                    debugExecutorInstance).runner(runner).runProfile(applicationConfiguration);
+            ExecutionEnvironment build = executionEnvironmentBuilder.build();
+            runner.execute(build);
+        } catch (ExecutionException ex) {
+            Messages.showMessageDialog(project, "error", "error", Messages.getErrorIcon());
+        }
+    }
+
+    private void debugTestNGInIDEA(Project project, AnActionEvent e) {
+        TestNGConfiguration applicationConfiguration = Util.getTestNGConfiguration(project, e, "editor");
         try {
             Executor debugExecutorInstance = DefaultDebugExecutor.getDebugExecutorInstance();
             final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultDebugExecutor.EXECUTOR_ID,

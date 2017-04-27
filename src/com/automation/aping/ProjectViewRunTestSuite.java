@@ -18,6 +18,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 
 /**
  * The type Run testcase.
@@ -26,19 +27,18 @@ public class ProjectViewRunTestSuite extends AnAction {
 
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
-        runInIDEA(project, e);
+        runTestNGInIDEA(project, e);
     }
 
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        //Get required data keys
+        e.getPresentation().setVisible(false);
         final Project project = e.getData(CommonDataKeys.PROJECT);
         PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
         if (psiXmlFile == null)
             return;
         VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
-        e.getPresentation().setVisible(false);
         if (!virtualXmlFile.getName().endsWith(".xml")) {
             return;
         }
@@ -48,8 +48,24 @@ public class ProjectViewRunTestSuite extends AnAction {
         e.getPresentation().setText("Run " + suiteName);
     }
 
-    public void runInIDEA(Project project, AnActionEvent e) {
+    private void runInIDEA(Project project, AnActionEvent e) {
         ApplicationConfiguration applicationConfiguration = Util.getApplicationConfiguration(project, e, "project_view");
+        try {
+
+            Executor runExecutorInstance = DefaultRunExecutor.getRunExecutorInstance();
+            final ProgramRunner runner = RunnerRegistry.getInstance().getRunner(DefaultRunExecutor.EXECUTOR_ID,
+                    applicationConfiguration);
+            ExecutionEnvironmentBuilder executionEnvironmentBuilder = new ExecutionEnvironmentBuilder(project,
+                    runExecutorInstance).runner(runner).runProfile(applicationConfiguration);
+            ExecutionEnvironment build = executionEnvironmentBuilder.build();
+            runner.execute(build);
+        } catch (ExecutionException ex) {
+            Messages.showMessageDialog(project, "error", "error", Messages.getErrorIcon());
+        }
+    }
+
+    private void runTestNGInIDEA(Project project, AnActionEvent e) {
+        TestNGConfiguration applicationConfiguration = Util.getTestNGConfiguration(project, e, "project_view");
         try {
 
             Executor runExecutorInstance = DefaultRunExecutor.getRunExecutorInstance();

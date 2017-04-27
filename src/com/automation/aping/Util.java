@@ -16,13 +16,47 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.theoryinpractice.testng.configuration.TestNGConfiguration;
+import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
+
+    public static TestNGConfiguration getTestNGConfiguration(Project project, AnActionEvent e, String type) {
+        TestNGConfiguration ac = new TestNGConfiguration("aping", project, TestNGConfigurationType.getInstance().getConfigurationFactories()[0]);
+        ac.setClassConfiguration(findTestClass(project));
+        Module module = Util.getModule(project, e);
+        if (module != null) {
+            ac.setModule(module);
+            ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
+        }
+        if (type.equalsIgnoreCase("editor")) {
+            final Editor editor = e.getData(CommonDataKeys.EDITOR);
+            String testCaseName = Util.getTestCaseName(editor);
+            VirtualFile virtualFile = PlatformDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
+            if (virtualFile != null) {
+                String fileName = virtualFile.getName();
+                String testSuiteName = fileName.substring(0, fileName.indexOf("."));
+                ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + testCaseName);
+            }
+        } else if (type.equalsIgnoreCase("project_view")) {
+            PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
+            if (psiXmlFile != null) {
+                VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
+                String testSuiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
+                ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + "null");
+            }
+        }
+
+        return ac;
+    }
 
     public static ApplicationConfiguration getApplicationConfiguration(Project project, AnActionEvent e, String type) {
         ApplicationConfiguration ac = new ApplicationConfiguration("aping", project, ApplicationConfigurationType.getInstance());
@@ -104,5 +138,11 @@ public class Util {
     public static String getBetweenString(String origiString, String beforeStr, String afterStr) {
         String afterSearchStr = origiString.substring(origiString.indexOf(beforeStr) + beforeStr.length());
         return afterSearchStr.substring(0, afterSearchStr.indexOf(afterStr));
+    }
+
+    private static PsiClass findTestClass(final Project project) {
+        final PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass("com.qa.framework.plugin.TestNGEntry", GlobalSearchScope.allScope(project));
+        assert psiClass != null;
+        return psiClass;
     }
 }
