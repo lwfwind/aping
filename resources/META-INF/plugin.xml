@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.github.lwfwind.automation.plugin.aping</id>
   <name>aping</name>
-  <version>2.0</version>
+  <version>3.0</version>
   <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/aping">lwfwind</vendor>
   <depends>TestNG-J</depends>
 
@@ -12,6 +12,7 @@
   <change-notes><![CDATA[
       1.0 add run/debug test case action to EditorPopupMenu<br>
       2.0 add run/debug test suite action to ProjectViewPopupMenu<br>
+      3.0 support run/debug testng test<br>
     ]]>
   </change-notes>
 
