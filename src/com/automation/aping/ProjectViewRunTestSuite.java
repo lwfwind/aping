@@ -11,13 +11,8 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 
 /**
@@ -33,19 +28,7 @@ public class ProjectViewRunTestSuite extends AnAction {
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        e.getPresentation().setVisible(false);
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
-        if (psiXmlFile == null)
-            return;
-        VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
-        if (!virtualXmlFile.getName().endsWith(".xml")) {
-            return;
-        }
-        String content = (String) FileDocumentManager.getInstance().getDocument(virtualXmlFile).getText();
-        e.getPresentation().setVisible((project != null && content.contains("TestSuite") && content.contains("TestCase")));
-        String suiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
-        e.getPresentation().setText("Run " + suiteName);
+        Util.updateVisibility(e, "Run");
     }
 
     private void runInIDEA(Project project, AnActionEvent e) {

@@ -1,6 +1,5 @@
 package com.automation.aping;
 
-
 import com.intellij.execution.application.ApplicationConfiguration;
 import com.intellij.execution.application.ApplicationConfigurationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -9,6 +8,7 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -16,9 +16,7 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
@@ -31,7 +29,7 @@ public class Util {
 
     public static TestNGConfiguration getTestNGConfiguration(Project project, AnActionEvent e, String type) {
         TestNGConfiguration ac = new TestNGConfiguration("aping", project, TestNGConfigurationType.getInstance().getConfigurationFactories()[0]);
-        ac.setClassConfiguration(findTestClass(project));
+        ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
         Module module = Util.getModule(project, e);
         if (module != null) {
             ac.setModule(module);
@@ -140,9 +138,65 @@ public class Util {
         return afterSearchStr.substring(0, afterSearchStr.indexOf(afterStr));
     }
 
-    private static PsiClass findTestClass(final Project project) {
-        final PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass("com.qa.framework.plugin.TestNGEntry", GlobalSearchScope.allScope(project));
+    private static PsiClass findPsiClass(final Project project, final String className) {
+        final PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(className, GlobalSearchScope.allScope(project));
         assert psiClass != null;
         return psiClass;
+    }
+
+    public static void updateVisibility(final AnActionEvent e, String runOrDebug) {
+        e.getPresentation().setVisible(false);
+        final Project project = e.getData(CommonDataKeys.PROJECT);
+        PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
+        if (psiXmlFile != null) {
+            VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
+            if (virtualXmlFile == null) {
+                return;
+            }
+            if (!virtualXmlFile.getName().endsWith(".xml")) {
+                return;
+            }
+            String content = (String) FileDocumentManager.getInstance().getDocument(virtualXmlFile).getText();
+            e.getPresentation().setVisible((project != null && content.contains("TestSuite") && content.contains("TestCase")));
+            String suiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
+            e.getPresentation().setText(runOrDebug + " " + suiteName);
+        } else {
+            PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
+            if (psiElement == null || !(psiElement instanceof PsiDirectory)) {
+                return;
+            }
+            List<PsiFile> psiFileList = new ArrayList<>();
+            getSubFiles((PsiDirectory) psiElement, psiFileList);
+            boolean isContainValidXml = false;
+            for (PsiFile psiFile : psiFileList) {
+                VirtualFile virtualXmlFile = psiFile.getVirtualFile();
+                if (virtualXmlFile.getName().endsWith(".xml")) {
+                    String content = (String) FileDocumentManager.getInstance().getDocument(virtualXmlFile).getText();
+                    if (content.contains("TestSuite") && content.contains("TestCase")) {
+                        isContainValidXml = true;
+                        break;
+                    }
+                }
+            }
+            if (isContainValidXml) {
+                e.getPresentation().setVisible(true);
+                e.getPresentation().setText(runOrDebug + " in " + ((PsiDirectory) psiElement).getName());
+            }
+        }
+    }
+
+    private static void getSubFiles(PsiDirectory psiDirectory, List<PsiFile> psiFileList) {
+        PsiFile[] psiFileArray = psiDirectory.getFiles();
+        if (psiFileArray.length > 0) {
+            for (PsiFile psiFile : psiFileArray) {
+                psiFileList.add(psiFile);
+            }
+        }
+        PsiDirectory[] psiDirectories = psiDirectory.getSubdirectories();
+        if (psiDirectories.length > 0) {
+            for (PsiDirectory psiSubDirectory : psiDirectories) {
+                getSubFiles(psiSubDirectory, psiFileList);
+            }
+        }
     }
 }
