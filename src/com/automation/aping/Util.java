@@ -29,12 +29,6 @@ public class Util {
 
     public static TestNGConfiguration getTestNGConfiguration(Project project, AnActionEvent e, String type) {
         TestNGConfiguration ac = new TestNGConfiguration("aping", project, TestNGConfigurationType.getInstance().getConfigurationFactories()[0]);
-        ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
-        Module module = Util.getModule(project, e);
-        if (module != null) {
-            ac.setModule(module);
-            ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
-        }
         if (type.equalsIgnoreCase("editor")) {
             final Editor editor = e.getData(CommonDataKeys.EDITOR);
             String testCaseName = Util.getTestCaseName(editor);
@@ -42,6 +36,7 @@ public class Util {
             if (virtualFile != null) {
                 String fileName = virtualFile.getName();
                 String testSuiteName = fileName.substring(0, fileName.indexOf("."));
+                ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
                 ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + testCaseName);
             }
         } else if (type.equalsIgnoreCase("project_view")) {
@@ -49,21 +44,30 @@ public class Util {
             if (psiXmlFile != null) {
                 VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
                 String testSuiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
+                ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
                 ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + "null");
             }
-        }
+            else{
+                PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
+                if (psiElement != null && psiElement instanceof PsiDirectory) {
+                    ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.factory.ExecutorFactory"));
+                    String xmlPath = ((PsiDirectory)psiElement).getVirtualFile().getPath();
+                    ac.setVMParameters(" -DxmlPath=" + xmlPath);
+                }
+            }
 
+        }
+        Module module = Util.getModule(project, e);
+        if (module != null) {
+            ac.setModule(module);
+            ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
+        }
         return ac;
     }
 
     public static ApplicationConfiguration getApplicationConfiguration(Project project, AnActionEvent e, String type) {
         ApplicationConfiguration ac = new ApplicationConfiguration("aping", project, ApplicationConfigurationType.getInstance());
         ac.setMainClassName("com.qa.framework.plugin.Entry");
-        Module module = getModule(project, e);
-        if (module != null) {
-            ac.setModule(module);
-            ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
-        }
         if (type.equalsIgnoreCase("editor")) {
             final Editor editor = e.getData(CommonDataKeys.EDITOR);
             String testCaseName = Util.getTestCaseName(editor);
@@ -81,7 +85,11 @@ public class Util {
                 ac.setProgramParameters("-testSuiteName " + testSuiteName + " -testCaseName " + "null");
             }
         }
-
+        Module module = getModule(project, e);
+        if (module != null) {
+            ac.setModule(module);
+            ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
+        }
         return ac;
     }
 
@@ -144,7 +152,25 @@ public class Util {
         return psiClass;
     }
 
-    public static void updateVisibility(final AnActionEvent e, String runOrDebug) {
+    public static void updateEditorVisibility(final AnActionEvent e, String runOrDebug) {
+        final Project project = e.getData(CommonDataKeys.PROJECT);
+        final Editor editor = e.getData(CommonDataKeys.EDITOR);
+        if (editor == null) {
+            return;
+        }
+        Document document = editor.getDocument();
+        //Set visibility only in case of existing project and editor
+        e.getPresentation().setVisible((project != null && document.getText().contains("TestSuite") && document.getText().contains("TestCase")));
+        String testCaseName = Util.getTestCaseName(editor);
+        if (testCaseName.equals("")) {
+            String testSuiteName = document.toString().substring(document.toString().lastIndexOf("/") + 1, document.toString().lastIndexOf("."));
+            e.getPresentation().setText(runOrDebug + " " + testSuiteName);
+        } else {
+            e.getPresentation().setText(runOrDebug + " " + testCaseName);
+        }
+    }
+
+    public static void updateProjectViewVisibility(final AnActionEvent e, String runOrDebug) {
         e.getPresentation().setVisible(false);
         final Project project = e.getData(CommonDataKeys.PROJECT);
         PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);

@@ -28,7 +28,7 @@ public class ProjectViewDebugTestSuite extends AnAction {
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        Util.updateVisibility(e, "Debug");
+        Util.updateProjectViewVisibility(e, "Debug");
     }
 
     private void debugInIDEA(Project project, AnActionEvent e) {

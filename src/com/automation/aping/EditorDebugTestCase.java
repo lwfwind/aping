@@ -34,22 +34,7 @@ public class EditorDebugTestCase extends AnAction {
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        //Get required data keys
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
-            return;
-        }
-        Document document = editor.getDocument();
-        //Set visibility only in case of existing project and editor
-        e.getPresentation().setVisible((project != null && document.getText().contains("TestSuite") && document.getText().contains("TestCase")));
-        String testCaseName = Util.getTestCaseName(editor);
-        if (testCaseName.equals("")) {
-            String testSuiteName = document.toString().substring(document.toString().lastIndexOf("/") + 1, document.toString().lastIndexOf("."));
-            e.getPresentation().setText("Debug " + testSuiteName);
-        } else {
-            e.getPresentation().setText("Debug " + testCaseName);
-        }
+        Util.updateEditorVisibility(e,"Debug");
     }
 
     public void debugInIDEA(Project project, AnActionEvent e) {

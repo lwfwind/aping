@@ -28,7 +28,7 @@ public class ProjectViewRunTestSuite extends AnAction {
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        Util.updateVisibility(e, "Run");
+        Util.updateProjectViewVisibility(e, "Run");
     }
 
     private void runInIDEA(Project project, AnActionEvent e) {

@@ -34,22 +34,7 @@ public class EditorRunTestCase extends AnAction {
     //Defining action’s visibility
     @Override
     public void update(final AnActionEvent e) {
-        //Get required data keys
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
-            return;
-        }
-        Document document = editor.getDocument();
-        //Set visibility only in case of existing project and editor
-        e.getPresentation().setVisible((project != null && document.getText().contains("TestSuite") && document.getText().contains("TestCase")));
-        String testCaseName = Util.getTestCaseName(editor);
-        if (testCaseName.equals("")) {
-            String testSuiteName = document.toString().substring(document.toString().lastIndexOf("/") + 1, document.toString().lastIndexOf("."));
-            e.getPresentation().setText("Run " + testSuiteName);
-        } else {
-            e.getPresentation().setText("Run " + testCaseName);
-        }
+        Util.updateEditorVisibility(e,"Run");
     }
 
     public void runInIDEA(Project project, AnActionEvent e) {
