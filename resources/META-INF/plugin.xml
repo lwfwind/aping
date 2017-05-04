@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.github.lwfwind.automation.plugin.aping</id>
   <name>aping</name>
-  <version>4.0</version>
+  <version>5.0</version>
   <vendor email="lwfwind@gmail.com" url="https://github.com/lwfwind/aping">lwfwind</vendor>
   <depends>TestNG-J</depends>
 
@@ -14,6 +14,7 @@
       2.0 add run/debug test suite action to ProjectViewPopupMenu<br>
       3.0 support run/debug testng test<br>
       4.0 support run/debug testng test from dir<br>
+      5.0 fix bug --- don't recognise testng test in jar<br>
     ]]>
   </change-notes>
 
