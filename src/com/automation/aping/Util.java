@@ -20,6 +20,8 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
+import com.theoryinpractice.testng.model.TestData;
+import com.theoryinpractice.testng.model.TestType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,36 +31,44 @@ public class Util {
 
     public static TestNGConfiguration getTestNGConfiguration(Project project, AnActionEvent e, String type) {
         TestNGConfiguration ac = new TestNGConfiguration("aping", project, TestNGConfigurationType.getInstance().getConfigurationFactories()[0]);
-        if (type.equalsIgnoreCase("editor")) {
-            final Editor editor = e.getData(CommonDataKeys.EDITOR);
-            String testCaseName = Util.getTestCaseName(editor);
-            VirtualFile virtualFile = PlatformDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
-            if (virtualFile != null) {
-                String fileName = virtualFile.getName();
-                String testSuiteName = fileName.substring(0, fileName.indexOf("."));
-                ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
-                ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + testCaseName);
-            }
-        } else if (type.equalsIgnoreCase("project_view")) {
-            PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
-            if (psiXmlFile != null) {
-                VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
-                String testSuiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
-                ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
-                ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + "null");
-            }
-            else{
-                PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
-                if (psiElement != null && psiElement instanceof PsiDirectory) {
-                    ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.factory.ExecutorFactory"));
-                    String xmlPath = ((PsiDirectory)psiElement).getVirtualFile().getPath();
-                    ac.setVMParameters(" -DxmlPath=" + xmlPath);
-                }
-            }
-
-        }
         Module module = Util.getModule(project, e);
         if (module != null) {
+            if (type.equalsIgnoreCase("editor")) {
+                final Editor editor = e.getData(CommonDataKeys.EDITOR);
+                String testCaseName = Util.getTestCaseName(editor);
+                VirtualFile virtualFile = PlatformDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
+                if (virtualFile != null) {
+                    String fileName = virtualFile.getName();
+                    String testSuiteName = fileName.substring(0, fileName.indexOf("."));
+                    //ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
+                    TestData testData = ac.getPersistantData();
+                    testData.SUITE_NAME = project.getBasePath() + File.separator + module.getName() + File.separator + "testng-xml" + File.separator + "TestNGEntry.xml";
+                    testData.TEST_OBJECT = TestType.SUITE.getType();
+                    ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + testCaseName);
+                }
+            } else if (type.equalsIgnoreCase("project_view")) {
+                PsiFile psiXmlFile = e.getData(LangDataKeys.PSI_FILE);
+                if (psiXmlFile != null) {
+                    VirtualFile virtualXmlFile = psiXmlFile.getVirtualFile();
+                    String testSuiteName = virtualXmlFile.getName().substring(0, virtualXmlFile.getName().indexOf("."));
+                    //ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.plugin.TestNGEntry"));
+                    TestData testData = ac.getPersistantData();
+                    testData.SUITE_NAME = project.getBasePath() + File.separator + module.getName() + File.separator + "testng-xml" + File.separator + "TestNGEntry.xml";
+                    testData.TEST_OBJECT = TestType.SUITE.getType();
+                    ac.setVMParameters(" -DtestSuiteName=" + testSuiteName + " -DtestCaseName=" + "null");
+                } else {
+                    PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
+                    if (psiElement != null && psiElement instanceof PsiDirectory) {
+                        //ac.setClassConfiguration(findPsiClass(project, "com.qa.framework.factory.ExecutorFactory"));
+                        TestData testData = ac.getPersistantData();
+                        testData.SUITE_NAME = project.getBasePath() + File.separator + module.getName() + File.separator + "testng-xml" + File.separator + "FactoryRun.xml";
+                        testData.TEST_OBJECT = TestType.SUITE.getType();
+                        String xmlPath = ((PsiDirectory) psiElement).getVirtualFile().getPath();
+                        ac.setVMParameters(" -DxmlPath=" + xmlPath);
+                    }
+                }
+
+            }
             ac.setModule(module);
             ac.setWorkingDirectory(project.getBasePath() + File.separator + module.getName());
         }
